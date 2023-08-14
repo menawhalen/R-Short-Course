@@ -1,0 +1,13 @@
+name: LUC_CDSC_S2
+title: LUC_CDSC_S2
+username: menawhalen
+account: menawhalen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9591562
+bundleId: 7557804
+url: https://menawhalen.shinyapps.io/LUC_CDSC_S2/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: baseR_gui.PNG|console_algebra.png|links used.docx|R Short Course.docx|Session-1.html|Session-2.html|Session-5.html|Session 1.Rmd|Session 5.Rmd

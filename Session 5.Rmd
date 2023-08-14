@@ -1,0 +1,169 @@
+---
+title: "Session 5"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: >
+  Learning about basic loops and functions in base R and map functions in the Tidyverse.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+```
+
+
+## Loops and Conditional Statements
+
+### While Loops
+
+```{r}
+# Indentations don't matter!
+# But they sure do look nicer!
+x <- 1
+while (x <= 100){
+  x <- x + 1
+  print(x)
+}
+cat("Last x is", x)
+print(paste0("Last x is ", x))
+
+# Another example
+x <- 1
+while (x < 5){
+  print("Hello")
+  x <- x*2
+}
+
+cat("last value of x =", x)
+
+```
+
+
+### For Loops
+
+```{r}
+# Consecutive indexes
+for (i in 1:10){
+  print(i)
+}
+
+for (i in 10:1){
+  print(i)
+}
+
+# Don't need to be consecutive!
+for (i in c(2, 3, 5, 7, 11)){
+  print(i)
+}
+
+```
+
+
+## Conditional Statements
+
+### If Statements
+
+```{r}
+sky <- "sunny"
+if (sky == "sunny"){
+  print("Leave your umbrella at home!")
+}
+
+sky <- "cloudy"
+if (sky == "sunny"){
+  print("Leave your umbrella at home!")
+}
+
+```
+
+
+### If-Else Statements
+
+```{r}
+sky <- "cellphone"
+if (sky == "sunny"){
+  print("Leave your umbrella at home!")
+} else {
+  print("Bring your umbrella")
+}
+
+```
+
+
+### Nested If-Else Statements
+
+```{r}
+sky <- "sunny"
+if (sky == "sunny") {
+  print("Leave your umbrella at home!")
+} else {
+  if (sky == "cloudy") {
+    print("Bring your umbrella")
+  } else {
+    if (sky == "snowing") {
+      print("Grab your parka")
+    } else {
+      print("Your guess is as good as mine")
+    }
+  }
+}
+
+```
+
+
+### Ifelse Function
+
+```{r}
+sky <- "sunny"
+ifelse(sky == "sunny", "Sunny", "not sunny")
+
+```
+
+## Booleans
+
+```{r}
+# TRUE and FALSE
+# Need to be all capital letters!
+a <- TRUE
+b <- FALSE
+
+4 + a
+
+d <- 0
+if (d == FALSE){
+  print("d is FALSE")
+}
+
+# also works
+d <- TRUE
+if (d){
+  print("d is TRUE")
+}
+
+# Also works
+d <- 1
+if (d){
+  print("d is TRUE")
+}
+
+```
+
+
+## Functions
+
+```{r}
+find_max <- function(a, b) {
+  if (a > b) {
+    return(a)
+  } else {
+    return(b)
+  }
+}
+
+find_max(1,2)
+find_max(5,3)
+
+```
+

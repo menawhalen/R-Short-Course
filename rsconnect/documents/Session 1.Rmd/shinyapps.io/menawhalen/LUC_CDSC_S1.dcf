@@ -1,0 +1,13 @@
+name: LUC_CDSC_S1
+title: LUC_CDSC_S1
+username: menawhalen
+account: menawhalen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9591555
+bundleId: 7557797
+url: https://menawhalen.shinyapps.io/LUC_CDSC_S1/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: links used.docx|R Short Course.docx|Session-1.html|Session-2.html|Session-5.html|Session 2.Rmd|Session 5.Rmd
