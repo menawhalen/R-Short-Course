@@ -1,0 +1,16 @@
+---
+title: "Session 6"
+output:
+  html_document:
+    df_print: paged
+  learnr::tutorial:
+    progressive: yes
+    allow_skip: yes
+runtime: shiny_prerendered
+description: |
+  Explore final data set to access your knowledge!
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+```
