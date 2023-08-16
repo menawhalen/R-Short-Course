@@ -10,15 +10,97 @@ runtime: shiny_prerendered
 description: |
   Learning about advanced data wrangling through joins with the tidyverse.
 ---
-
 ```{r setup, include=FALSE}
 library(learnr)
 ```
 
-## Inner Join
-Inner joins return results if the keys are matched in BOTH tables.
+## File Pathways
 
-```{r examine_data, message=FALSE, warning=FALSE}
+Computers are not as smart as you think and you have to tell it exactly what you want it to do and exactly where to look for things.
+
+A file pathway is like a roadmap that guides R to locate your data files on your computer. It's similar to giving directions to someone using street names and landmarks. There are two main types of file pathways:
+
+* Absolute Pathway: This is the complete pathway starting from the root directory of your computer. It's like giving GPS coordinates for a location.
+
+Example: "C:/Users/YourUsername/Documents/data/file.csv"
+
+* Relative Pathway: This is the pathway relative to the current *working directory* in R. It's like giving directions based on your current location.
+
+Example: "data/file.csv"
+
+### Working Directory 
+
+The working directory is the location on your computer where R is currently operating. When you read or write files, R will look for them in this directory by default. This makes it important to set your working directory to the right location, especially when working with data files.
+
+You can use the `getwd()` function to check your current working directory, and the `setwd()` function to set a new working directory.
+
+    # Check the current working directory
+    getwd()
+    
+    # Set a new working directory
+    setwd("path/to/your/new/directory")
+
+### Organizing Data:
+It's a good practice to organize your data in a separate folder within your R project. This keeps things tidy and helps avoid confusion.
+
+* Working in Projects: When you are working in a project the working directory is set for you where the project is located on your computer.
+
+* Create a Data Folder: In your R project directory, create a folder named "data" to store your datasets.
+
+* Place Data Files: Put your dataset files (CSV, Excel, etc.) inside the "data" folder.
+
+## readr
+The readr package in the tidyverse provides functions to easily read data files into R. Let's see how to use it to import CSV and Excel files:
+
+Importing CSV Files:
+
+    # Use read_csv to import a CSV file
+    file_path <- "data/file.csv"  # Specify the relative pathway
+    data <- read_csv(file_path)
+    read_csv("data/file.csv")
+    
+Importing Excel Files (XLSX):
+
+    # Use read_xlsx to import an Excel file
+    file_path <- "data/file.xlsx"  # Specify the relative pathway
+    data <- read_xlsx(file_path)
+
+### Checking Imported Data:
+
+After importing the data, it's a good idea to examine it using functions like `head()`, `summary()`, or `str()`.
+
+    # Display the first few rows
+    head(data)
+    
+    # Get summary statistics
+    summary(data)
+    
+    # Display the structure of the data
+    str(data)
+
+### On your own..
+
+Practice importing datasets by going to [https://github.com/menawhalen/R-Short-Course/tree/main/data](https://github.com/menawhalen/R-Short-Course/tree/main/data) and download both dataset we have been using `CIACountries` and `flights`.
+
+* save the files in your data folder
+* open a new R script
+* import the datasets using `read_csv()`
+* check that you imported the datasets properly
+
+## Joins
+
+In the tidyverse, joining two datasets together is a way to combine data from different sources based on common variables. This is similar to joining tables in a relational database or using VLOOKUP in spreadsheet software. The dplyr package within the tidyverse provides functions to perform these joins.
+
+### Inner Join
+
+An inner join combines rows from two datasets where there's a match between the specified variables. Rows with no matching values are excluded. Inner joins return results if the keys are matched in BOTH tables.
+
+    inner_joined_data <- dataset1 %>%
+      inner_join(dataset2, by = "common_column")
+      
+### Practice with Flights Data      
+
+```{r examine_data, message=FALSE, warning=FALSE, echo=FALSE}
 library(tidyverse)
 library(mdsr)
 library(nycflights13)
@@ -28,77 +110,61 @@ head(flights)
 
 ```
 
-```{r}
-#Old school
-flights_joined <- merge(flights, airlines, by.x = "carrier", by.y = "carrier")
-glimpse(flights_joined)
-```
 
-```{r}
-flights_joined %>% 
-  select(carrier, name, flight, origin, dest) %>% 
-  head(3)
-```
-
-```{r}
+```{r inner}
 #Tidyverse way
 flights_joined <- flights %>% 
   inner_join(airlines, by = c("carrier" = "carrier"))
 glimpse(flights_joined)
-```
-
-```{r}
+ 
 flights_joined %>% 
   select(carrier, name, flight, origin, dest) %>% 
   head(3)
 ```
 
-```{r}
-#Same number of rows.  Why?  
-nrow(flights)
-nrow(flights_joined)
-```
 
 "In an inner_join(), the result set contains only those rows that have matches in both tables. In this case, all of the rows in flights have exactly one corresponding entry in airlines, so the number of rows in flights_joined is the same as the number of rows in flights (this will not always be the case)."
 
 ***It is always a good idea to carefully check that the number of rows returned by a join operation is what you expected. In particular, you should carefully check for rows in one table that matched to more than one row in the other table***
 
-## Left Join
+### Left Join
 
-"Here the rows of the first table are always returned, regardless of whether there is a match in the second table."
+A left join includes all rows from the left dataset and the matching rows from the right dataset. If there's no match, the columns from the right dataset will be filled with NA. Here the rows of the first table are always returned, regardless of whether there is a match in the second table.
 
-```{r}
+    left_joined_data <- dataset1 %>%
+      left_join(dataset2, by = "common_column")
+
+### Practice with Flights Data  
+
+```{r left}
 #Airports in the pacific time zone only 
 airports_pt <- airports %>%
-  filter(tz == -8) %>% select(faa, name, tz)
+  filter(tz == -8) %>% 
+  select(faa, name, tz)
+
 nrow(airports_pt)
 head(airports_pt)
-```
-
-```{r}
+  
 #If we do inner join
 nyc_dests_pt <- flights %>% 
-  inner_join(airports_pt, by = c("dest" = "faa")) %>% select(name, tz, dest, dep_time,sched_dep_time, arr_time, sched_arr_time, carrier)
-head(nyc_dests_pt)
-```
+  inner_join(airports_pt, by = c("dest" = "faa")) %>% 
+  select(name, tz, dest, dep_time,sched_dep_time, arr_time, sched_arr_time, carrier)
 
-```{r}
+head(nyc_dests_pt)
+ 
 #Notice these are different.  
 #key variable needs to be in BOTH data sets to get returned.  
 nrow(flights)
 nrow(nyc_dests_pt)
-```
-
-
-```{r}
+ 
 nyc_dests <- flights %>% 
   left_join(airports_pt, by = c("dest" = "faa"))
-```
-
-```{r}
+ 
 #Notice these are the same!
 nrow(flights)
 nrow(nyc_dests)
+
+
 nyc_dests %>%
   summarize(
     num_flights = n(),
@@ -107,39 +173,104 @@ nyc_dests %>%
   )
 ```
 
+### Full Join 
+
+A full join includes all rows from both datasets. Columns from the dataset with missing values will be filled with NA where there's no match.
+
+    full_joined_data <- dataset1 %>%
+      full_join(dataset2, by = "common_column")
+      
+There is also a right join but this is much less common. A right join is the opposite of a left join. It includes all rows from the right dataset and the matching rows from the left dataset.    
+
+      
+### Practice with Flights Data       
 
 ```{r}
-library(Lahman)
-#Let's look at Manny Ramirez
-manny <- Batting %>%
-  filter(playerID == "ramirma02")
-nrow(manny)
+# Right Join: Keeping all airports in the pacific time zone, matching if possible
+nyc_dests_right <- flights %>% 
+  right_join(airports_pt, by = c("dest" = "faa"))
 
-People %>% 
-  filter(nameLast == "Ramirez" & nameFirst == "Manny")
+# Full Join: Keeping all destinations and airports, filling with NA where no match
+nyc_dests_full <- flights %>% 
+  full_join(airports_pt, by = c("dest" = "faa"))
 
-#Question 1: How many years did Manny Ramirez hit more than 30 HRs?
-#Question 2: In terms of number of HRs hit, what AGES were his five best? 
-#Question 3: What fraction of total homeruns in the league did Manny hit in each of his seasons?   
+# Summary of the results
+summary_inner <- nyc_dests_pt %>%
+  summarize(num_flights = n())
+
+summary_left <- nyc_dests %>%
+  summarize(
+    num_flights = n(),
+    num_flights_pt = sum(!is.na(name)),
+    num_flights_not_pt = sum(is.na(name))
+  )
+
+summary_right <- nyc_dests_right %>%
+  summarize(num_airports = n())
+
+summary_full <- nyc_dests_full %>%
+  summarize(num_rows = n(), num_airports = sum(!is.na(name)))
+
+# Display the summaries
+summary_inner
+summary_left
+summary_right
+summary_full
 
 ```
 
-```{r}
-manny_people <- People %>% 
-  filter(nameLast == "Ramirez" & nameFirst == "Manny")
 
+### Join by multiple columns
 
-manny %>% group_by(yearID) %>% summarise(HRt = sum(HR)) %>% filter(HRt > 30)
+The `by` argument specifies the column(s) that should be used for matching. These join functions work well when the datasets have a shared column containing the same type of data (e.g., IDs or keys).
 
-#Ages
-manny %>% left_join(manny_people, by = c("playerID" = "playerID")) %>% mutate(age = yearID - birthYear) %>% group_by(age) %>% summarise(HRt = sum(HR)) %>% arrange(desc(HRt))
+You can use multiple column names to define the matching conditions.
 
-#
-lg <- Batting %>% 
-  group_by(yearID) %>% summarise(HRt_league = sum(HR))
+    # Syntax
+    inner_join(df1, df2, by=c('x1'='y1', 'x2'='y2'))
 
-manny_tot <- manny %>% group_by(yearID) %>% summarise(HRt_manny = sum(HR)) 
-manny_tot %>% left_join(lg, by = c("yearID" = "yearID")) %>% mutate(fraction = HRt_manny/HRt_league) %>% arrange(desc(fraction))
+Example Code 
 
+```{r example_mult}
+# Create emp Data Frame
+emp_df=data.frame(
+  emp_id=c(1,2,3,4,5,6),
+  name=c("Smith","Rose","Williams","Jones","Brown","Brown"),
+  superior_emp_id=c(-1,1,1,2,2,2),
+  dept_id=c(10,20,10,10,40,50),
+  dept_branch_id= c(101,102,101,101,104,105)
+)
+
+# Create dept Data Frame
+dept_df=data.frame(
+  dept_id=c(10,20,30,40),
+  dept_name=c("Finance","Marketing","Sales","IT"),
+  dept_branch_id= c(101,102,103,104)
+)
+
+emp_df %>% 
+  inner_join(dept_df, 
+        by=c('dept_id'='dept_id', 
+             'dept_branch_id'='dept_branch_id'))
 
 ```
+
+
+## On your own..
+
+Answer the following questions either in the exercise below or in your R script
+
+1. Which airlines had the most delayed flights departing from NYC in 2013?
+2. What are the top destinations (airports) for flights departing from NYC in 2013?
+3. Which airlines had the highest average departure delays from each airport?
+4. What is the distribution of flight distances for flights departing from each airport?
+5. Which airlines operated the most flights from each airport in NYC?
+
+```{r join_ex, exercise = TRUE}
+## Q1
+flights %>% 
+  left_join()
+## Q2
+
+```
+
