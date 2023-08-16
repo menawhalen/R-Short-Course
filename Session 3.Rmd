@@ -1,13 +1,11 @@
 ---
 title: "Session 3"
 output:
-  html_document:
-    df_print: paged
   learnr::tutorial:
-    progressive: yes
-    allow_skip: yes
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
-description: |
+description: >
   Learning about advanced data wrangling through joins with the tidyverse.
 ---
 ```{r setup, include=FALSE}
@@ -41,6 +39,7 @@ You can use the `getwd()` function to check your current working directory, and 
     setwd("path/to/your/new/directory")
 
 ### Organizing Data:
+
 It's a good practice to organize your data in a separate folder within your R project. This keeps things tidy and helps avoid confusion.
 
 * Working in Projects: When you are working in a project the working directory is set for you where the project is located on your computer.
