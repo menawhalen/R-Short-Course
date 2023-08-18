@@ -1,11 +1,9 @@
 ---
 title: "Session 4"
 output:
-  html_document:
-    df_print: paged
   learnr::tutorial:
-    progressive: yes
-    allow_skip: yes
+    progressive: true
+    allow_skip: true
 runtime: shiny_prerendered
 description: |
   Learning about data visualization through ggplot2 in the Tidyverse.
@@ -16,192 +14,200 @@ description: |
 library(learnr)
 ```
 
-### ggplot
-The key to using ggplot to is to think of ever command as a layer!
+# ggplot2
 
-```{r start, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(mdsr)
-ggplot(aes(x = gdp, y = educ),data = CIACountries) + geom_point()
+## Syntax and Structure:
 
-#CIACountries %>% ggplot(aes(x = gdp, y = educ)) + geom_point()
-```
+Fundamental components of ggplot2:
 
-Add axis labels
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point() + 
-  xlab("GDP (Millions of $)") + 
-  ylab("Education")
-```
+* Data Layer: The dataset you're working with.
+* Aesthetics Mapping (aes): How data variables map to plot aesthetics like position, color, shape, etc.
+* Geometric Objects (geom): The visual elements to represent the data (points, lines, bars, etc.).
+* Facets (facet_wrap or facet_grid): Splitting data into subplots based on a variable.
+* Theme: Controlling the overall appearance of the plot.
 
-Change the shape
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point(shape = 23) +
-  xlab("GDP") +
-  ylab("Education")
-```
+> The key to using ggplot to is to think of every command as a layer like the pipe for `dplyr`
 
-Change the color
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point(shape = 23, colour = "red") +
-  xlab("GDP") +
-  ylab("Education") 
-```
 
-Change the x and y limits 
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point(shape = 23, colour = "red") +
-  xlab("GDP") +
-  ylab("Education") + 
-  xlim(0,200000) + 
-  ylim(0,15)
-```
+*Data Layer:*
+The data layer is where you specify the dataset that you want to visualize. It's the foundation of your plot and determines what information will be represented. In the data layer, you provide the actual data frame or data source you want to use for plotting. This data source should contain the variables you'll use in your plot.
 
-Aspect Ratio
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point(shape = 23, colour = "red") +
-  xlab("GDP") +
-  ylab("Education") + 
-  xlim(0,200000) + 
-  ylim(0,15) + 
-  coord_fixed(ratio=10000)
-```
+*Aesthetic Layer:*
+The aesthetic layer defines how variables from the dataset are visually represented in the plot. It maps data variables to visual properties of the plot such as position, color, size, shape, and transparency. The aesthetic mappings are set using the `aes()` function, which stands for aesthetics.
 
-Change axis values
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point(shape = 23, colour = "red") +
-  xlab("GDP") +
-  ylab("Education") + 
-  xlim(0,200000) + 
-  ylim(0,15) + 
-  coord_fixed(ratio=10000) + 
-  scale_x_continuous(breaks = c(0,100000,200000),
-                     labels = c("None","A little","A lot"), 
-                     limits = c(0,200000)) + 
-  scale_y_continuous(breaks = c(0,5,10,15),
-                     labels = c("None","Ok","Good","Great"),
-                     limits = c(0,15)
-                     )
-#Note: scale_x_continuous overrules the xlim!
-```
+*Geom Layer:*
+The geom layer is responsible for creating the graphical elements that you see on the plot. Each type of visualization, like points, lines, bars, etc., is represented by a different geom. The choice of geom depends on the type of data you have and the story you want to tell.
 
-Size  
-```{r}
-ggplot(aes(x = gdp, y = educ), data = CIACountries) +
-  geom_point(shape = 23, colour = "red", size = 0.5) +
-  xlab("GDP") +
-  ylab("Education") + 
-  xlim(0,200000) + 
-  ylim(0,15) + 
-  coord_fixed(ratio=10000) + 
-  scale_x_continuous(breaks = c(0,100000,200000),
-                     labels = c("None","A little","A lot"), 
-                     limits = c(0,200000)) + 
-  scale_y_continuous(breaks = c(0,5,10,15),
-                     labels = c("None","Ok","Good","Great"),
-                     limits = c(0,15)
-                     )
+For example, in a scatter plot, you would map the x and y coordinates of your data to the position of the points on the plot. You might also map a categorical variable to the color of the points and a numeric variable to the size of the points. This aesthetic layer gives visual cues about the relationships and patterns in your data.
 
-```
+    # Assume dataset contains variables 'x' and 'y' (numeric) and 'cat' (categorical)
+    ggplot(data = dataset, aes(x = x, y = y, color = cat)) +
+      geom_point()  # This is a geometric layer for scatter plot
 
-# Univariate displays
+## Types of Plots
+
+### One Variable Plots (Univariate):
+1. Numeric Variables:
+* Histogram: Visualize the distribution of a numeric variable.
+* Density Plot: Similar to a histogram but with a smooth curve.
+* Boxplot: Display the distribution's summary statistics and outliers.
+* Violin Plot: Combines a box plot and a density plot.
+
+2. Categorical Variables:
+* Bar Plot: Display the frequencies or proportions of different categories. (The only good one!!!)
+* Pie Chart: Represent proportions of different categories in a circular format. (Please don't use..)
+* Dot Plot: Show individual data points along a category. (Still not very good..)
+
+### Two Variable Plots:
+
+1. Numeric vs. Numeric:
+* Scatter Plot: Visualize the relationship between two numeric variables.
+* Line Plot: Display (connected) changes over time or another continuous variable.
+
+2. Numeric vs. Categorical (Side-by-Side):
+* Box Plot: Compare numeric values across different categories.
+* Violin Plot: Compare the distribution of numeric values across categories.
+* Bar Plot: Show numeric values within different categories.
+
+3. Categorical vs. Categorical:
+* Grouped Bar Plot: Compare frequencies or proportions of multiple categorical variables side by side.
+* Stacked Bar Plot: Similar to a grouped bar plot, but bars are stacked.
+
+### Three Variable Plots:
+1. Numeric vs. Numeric vs. Categorical:
+* Faceted Plot: Create multiple small plots based on a third categorical variable.
+* Bubble Plot: Similar to a scatter plot, but with bubbles of varying sizes representing a third variable.
+
+2. Categorical vs. Categorical vs. Numeric:
+* Heatmap: Display the relationship between two categorical variables using color intensity.
+
+### Multivariate Plots:
+1. Numeric vs. Numeric vs. Numeric:
+* 3D Scatter Plot: Visualize the relationship between three numeric variables in three dimensions.
+2. Categorical vs. Categorical vs. Categorical:
+* Mosaic Plot: Display the relationship between three categorical variables using rectangular tiles.
+
+Remember, the choice of plot depends on the research question, the variables you have, and the story you want to tell with your data. Each type of plot emphasizes different aspects of the data, so it's important to choose the one that effectively communicates the insights you want to convey.
+
+We will only have time to discuss one and two variable plots but with the option to add more aesthetics like color and shape based on categorical information.
+
+
+## Univariate displays
 
 ### Histograms
 
-```{r}
+```{r hist, message=FALSE}
 library(mdsr)
+library(tidyverse)
 data("SAT_2010")
-```
-```{r}
-#Base R
-hist(SAT_2010$math)
-#ggplot
-ggplot(aes(x = math), data = SAT_2010) + geom_histogram()
-#gggplot with breaks
-ggplot(aes(x = math), data = SAT_2010) + geom_histogram(breaks = c(400,450,550,600,700))
-```
 
+SAT_2010 %>% 
+  ggplot(aes(x = math)) +
+  geom_histogram()
 
-```{r}
-#Base R
-dens <- density(SAT_2010$math)
-plot(dens$x, dens$y, type = "l")
-#ggplot
-#This is a lot cleaner code and nicer looking!
-ggplot(aes(x = math), data = SAT_2010) + geom_density()
+## can also write like
+ggplot(SAT_2010, aes(x = math)) +
+  geom_histogram()
 
-#More jagged
-ggplot(aes(x = math), data = SAT_2010) + geom_density(bw = 10)
-
-
-#A histogram and a density plot on the same plot!!!
-ggplot(aes(x = math), data = SAT_2010) + geom_histogram(aes(y = after_stat(density))) + geom_density(colour = "red") 
-
-ggplot(aes(x = math), data = SAT_2010) + geom_density(colour = "red")  + geom_histogram(aes(y = after_stat(density))) 
+## change the break points
+SAT_2010 %>% 
+  ggplot(aes(x = math)) +
+  geom_histogram(breaks = c(400,450,550,600,700))
+## change the bins
+SAT_2010 %>% 
+  ggplot(aes(x = math)) +
+  geom_histogram(bins = 10)
 ```
 
-```{r}
-sub <- head(SAT_2010, 10)
-sub <- sub[order(sub$math),]
-barplot(sub$math, names.arg = sub$state)
+### Density Plots
 
-#ggplot
-ggplot(
-  data = head(SAT_2010, 10), 
-  aes(x = reorder(state, math), y = math)
-) +
-  geom_col() +
-  labs(x = "State", y = "Average math SAT score")
+```{r density}
+SAT_2010 %>% 
+  ggplot(aes(x = math)) + 
+  geom_density()
+
+#changing the bandwidth to be more jagged
+## the smaller the more jagged
+SAT_2010 %>% 
+  ggplot(aes(x = math)) + 
+  geom_density(bw = 10)
+
 ```
-### Stacked bar chart
-```{r}
-library(mosaicData)
-ggplot(data = mosaicData::HELPrct, aes(x = homeless)) + 
-  geom_bar(aes(fill = substance), position = "fill") 
 
-ggplot(data = mosaicData::HELPrct, aes(x = homeless)) + 
-  geom_bar(aes(fill = substance), position = "fill") +
-  scale_fill_brewer(palette = "Spectral") 
+### Boxplots
 
+```{r boxplots}
+SAT_2010 %>% 
+  ggplot(aes(x = math)) +
+  geom_boxplot()
 
-ggplot(data = mosaicData::HELPrct, aes(x = homeless)) + 
-  geom_bar(aes(fill = substance), position = "fill") +
-  scale_fill_brewer(palette = "Spectral") + 
+## sometimes easier to view with a flipped axis
+SAT_2010 %>% 
+  ggplot(aes(x = math)) +
+  geom_boxplot() +
   coord_flip()
+```
+
+
+### Bar Plots
+```{r barplot}
+## need a categorical variables to count
+
+SAT_2010 %>% 
+  mutate(salary_level = case_when(
+    salary < 52000 ~ "Low",
+    salary >= 52000 & salary < 60000 ~ "Medium",
+    salary >= 60000 ~ "High"
+  )) %>% 
+  ggplot(aes(x = salary_level)) +
+  geom_bar()
+
+## notice that it put's it in alphabetical order
+
+SAT_2010 %>% 
+  mutate(salary_level = case_when(
+    salary < 52000 ~ "Low",
+    salary >= 52000 & salary < 60000 ~ "Medium",
+    salary >= 60000 ~ "High"
+  )) %>% 
+  mutate(salary_level = factor(salary_level, levels = c("Low", "Medium", "High"))) %>% 
+  ggplot(aes(x = salary_level)) +
+  geom_bar()
+
 
 ```
 
 
-### Multivariate displays
-```{r}
-g <- ggplot(
-  data = SAT_2010, 
-  aes(x = expenditure, y = math)
-) + 
+
+## Multivariate displays
+
+### Scatter plots
+
+```{r scatter}
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math)) + 
   geom_point()
 ```
- We can easily add a trend line with ggplot.  
-```{r}
-g + 
-  geom_smooth(method = "loess", se = FALSE) + 
-  xlab("Average expenditure per student ($1000)") +
-  ylab("Average score on math SAT")
+ 
+We can easily add a trend line with ggplot.  
+
+```{r scatter_trend}
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) 
+
+## ?geom_smooth
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math)) + 
+  geom_point() +
+  geom_smooth(method = "loess", se = TRUE) 
 ```
 
-To do this in base R you have to do this: 
-```{r}
-plot(SAT_2010$expenditure, SAT_2010$math)
-a <- loess(SAT_2010$math ~ SAT_2010$expenditure)
-points(a$x[order(a$x)], a$fitted[order(a$x)], type = "l", col = "red")
-```
 
-```{r}
+### Color or Shape 
+
+```{r color}
 SAT_2010 <- SAT_2010 %>%
   mutate(
     SAT_rate = cut(
@@ -210,238 +216,125 @@ SAT_2010 <- SAT_2010 %>%
       labels = c("low", "medium", "high")
     )
   )
-#g <- g %+% SAT_2010
-#g + aes(color = SAT_rate)
-#To this in base R is possible, but it is a pain!
+
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math, color = SAT_rate)) +
+  geom_point()
+## add a trend line to help visually explain differences 
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math, color = SAT_rate)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
 
 
-#Full code: 
-ggplot(data = SAT_2010, aes(x = expenditure, y = math,color = SAT_rate)) + 
-  geom_point() + geom_smooth(aes(color = SAT_rate), method = "lm", se = FALSE) + scale_colour_brewer(palette = "Spectral") 
+## Now try with shape
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math, shape = SAT_rate)) +
+  geom_point()
+
+## can be hard to see so generally can be combined together
+## this is redundant but can help bring the point home
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math, color = SAT_rate, shape = SAT_rate)) +
+  geom_point()
+
 ```
 
 ### Faceting
 
-```{r}
-#Base R
-par(mfrow = c(1, 3))
+This is similar to using shape or color for a categorical variables but puts them on separate plots.
 
-plot(SAT_2010$expenditure[SAT_2010$SAT_rate == "low"],
-     SAT_2010$math[SAT_2010$SAT_rate == "low"],
-     xlab = "expenditure",
-     ylab = "math score")
+```{r facet}
+SAT_2010 %>% 
+  ggplot(aes(x = expenditure, y = math)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ SAT_rate)
 
-plot(SAT_2010$expenditure[SAT_2010$SAT_rate == "medium"],
-     SAT_2010$math[SAT_2010$SAT_rate == "medium"],
-     xlab = "expenditure",
-     ylab = "math score")
-
-plot(SAT_2010$expenditure[SAT_2010$SAT_rate == "high"],
-     SAT_2010$math[SAT_2010$SAT_rate == "high"],
-     xlab = "expenditure",
-     ylab = "math score")
+## can use 2 categorical variables
+SAT_2010 %>% 
+  mutate(ptr = ifelse(pupil_teacher_ratio >= 15, "ptr - high","ptr - low")) %>% 
+  ggplot(aes(x = expenditure, y = math)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_grid(ptr ~ SAT_rate)
 ```
 
-So much easier in ggplot!
+### Side-by-Side
 
-```{r}
-#g + facet_wrap( ~SAT_rate )
-#g + facet_grid(~ SAT_rate )
+```{r sbs}
+SAT_2010 %>% 
+  ggplot(aes(math, SAT_rate)) +
+  geom_boxplot() +
+  coord_flip()
 ```
 
-```{r}
-#full code
-SAT_2010 <- SAT_2010 %>%
-  mutate(SAT_rate = cut(
+
+## On your own..
+
+Make these plots!
+
+Code for SAT_2010 mutate
+
+          mutate(ptr = ifelse(pupil_teacher_ratio >= 15, "ptr - high","ptr - low"), 
+                 sal = ifelse(salary >= 52000, "sal - high","sal - low"),
+                 SAT_rate = cut(
+            sat_pct,
+            breaks = c(0, 30, 60, 100),
+            labels = c("low", "medium", "high")
+          ))
+  
+  
+```{r oyw, echo = FALSE, warning=FALSE}
+SAT_2010 <- SAT_2010 %>% 
+  mutate(ptr = ifelse(pupil_teacher_ratio >= 15, "ptr - high","ptr - low"), 
+         sal = ifelse(salary >= 52000, "sal - high","sal - low"),
+         SAT_rate = cut(
     sat_pct,
     breaks = c(0, 30, 60, 100),
     labels = c("low", "medium", "high")
   ))
-g <- ggplot(data = SAT_2010,
-            aes(x = expenditure, y = math)) +
-  geom_point() + geom_smooth(method = "lm") + facet_wrap( ~ SAT_rate)
-g
 
-```
-
-NHANES example
-```{r}
-library(NHANES)
-ggplot(
-  data = slice_sample(NHANES, n = 1000), 
-  aes(x = Age, y = Height, color = Gender)
-) + 
+ggplot(aes(x = math, y = read, col = SAT_rate), data = SAT_2010) + 
   geom_point() + 
-  geom_smooth() + 
-  xlab("Age (years)") + 
-  ylab("Height (cm)") +
-  labs(color = "Gender")
-```
-
-```{r}
-#relevel the reference category
-library(NHANES)
-ggplot(
-  data = slice_sample(NHANES, n = 1000), 
-  aes(x = Age, y = Height, color = fct_relevel(Gender, "male"))
-) + 
-  geom_point() + 
-  geom_smooth() + 
-  xlab("Age (years)") + 
-  ylab("Height (cm)") +
-  labs(color = "Gender")
-```
-
-```{r}
-library(macleish)
-ggplot(data = whately_2015, aes(x = when, y = temperature)) + 
-  geom_line(color = "darkgreen") + 
-  geom_smooth(color = "pink") + 
-  xlab(NULL) + 
-  ylab("Temperature (degrees Celsius)")
-```
-```{r}
-# whately_2015 %>%
-#   mutate(month = as.factor(lubridate::month(when, label = TRUE))) %>%
-#   group_by(month) %>% 
-#   skim(temperature) %>%
-#   select(-na)
-
-whately_2015$month <-
-  as.factor(lubridate::month(whately_2015$when, label = TRUE))
-
-
-#Base R
-boxplot(
-  whately_2015$temperature ~ whately_2015$month,
-  xlab = "Month",
-  ylab = expression("Temperature (" *  ~ degree * C * ")")
-)
-
-#ggplot
-ggplot(
-  data = whately_2015, 
-  aes(
-    x = lubridate::month(when, label = TRUE), 
-    y = temperature
-  )
-) + 
-  geom_boxplot() +
-  xlab("Month") + 
-  ylab(expression("Temperature ("*~degree*C*")"))
-```
-
-Check out the extended example here: https://mdsr-book.github.io/mdsr2e/ch-vizII.html#sec:babynames
-
-
-```{r}
-SAT_2010 <- SAT_2010 %>%
-  mutate(
-    SAT_rate = cut(
-      sat_pct, 
-      breaks = c(0, 30, 60, 100), 
-      labels = c("low", "medium", "high")
-    )
-  )
-
-median(SAT_2010$pupil_teacher_ratio)
-median(SAT_2010$salary)
-SAT_2010 <- SAT_2010 %>% mutate(ptr = ifelse(pupil_teacher_ratio > median(SAT_2010$pupil_teacher_ratio), "high","low"),
-      sal = ifelse(salary > median(SAT_2010$salary), "high","low"))
-
-ggplot(aes(x = math, y = read, color = SAT_rate), data = SAT_2010) + geom_point() + facet_grid(sal ~ ptr)
-
-
-
-
-
-
+  facet_grid(sal~ptr) 
 ```
 
 
+Now try using the `Cherry` dataset. Explore it and try to make these maps.
 
-
-
-
-
-
-# In class exercise
-Make these plots!
-
-```{r echo = FALSE}
-SAT_2010 <- SAT_2010 %>% 
-  mutate(ptr = ifelse(pupil_teacher_ratio >= 15, "ptr - high","ptr - low"), 
-         sal = ifelse(salary >= 52000, "sal - high","sal - low"))
-
-library(ggplot2)
-ggplot(aes(x = math, y = read, col = SAT_rate), data = SAT_2010) + geom_point() + facet_grid(sal~ptr) 
-```
-
-```{r echo = FALSE}
+```{r cherry, echo = FALSE, warning=FALSE}
 library(mdsr)
 library(tidyverse)
 data(Cherry)
 
+ggplot(aes(x = gun, y = sex, color = sex), data = Cherry) + 
+  geom_boxplot() + 
+  coord_flip()
 
 
+Cherry %>% 
+  filter(year %in% c(1999:2001)) %>% 
+  ggplot(aes(x = age)) + 
+  geom_histogram() + 
+  facet_wrap( ~ year)
+
+Cherry %>% 
+  filter(year %in% c(2003:2006)) %>% 
+  ggplot(aes(x = nruns, y = sex)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  facet_wrap(~ year)
 
 
-ggplot(aes(x = gun, color = sex), data = Cherry) + geom_density()
-ggplot(aes(x = gun, color = sex), data = Cherry) + geom_boxplot()
-ggplot(aes(x = gun, color = sex), data = Cherry) + geom_histogram()
-ggplot(aes(x = gun, fill = sex), data = Cherry) + geom_histogram()
-ggplot(aes(x = gun, fill = sex), data = Cherry) + geom_boxplot()
-ggplot(aes(x = gun, fill = sex), data = Cherry) + geom_density(alpha = 0.9)
-
-
-sub <- Cherry %>% filter(year %in% c(1999:2001))
-sub <- Cherry %>% filter(year >= 1999 & year <= 2001)
-sub <- Cherry %>% filter(year == 1999 | year == 2000 | year == 2001)
-
-
-sub <- Cherry %>% filter(year %in% c(1999, 2008))
-sub <- Cherry %>% filter(year == 1999 | year == 2008)
-ggplot(aes(x = gun), data = sub) + geom_density() + facet_wrap( ~ year)
-ggplot(aes(x = gun), data = Cherry) + geom_density() + facet_grid( ~ year)
-
-
-
-ggplot(aes(x = gun), data = sub) + geom_boxplot() + coord_flip()
-ggplot(aes(x = gun, color = as.factor(year)), data = sub) + geom_density() 
-
-
-ggplot(aes(y = gun, x = as.factor(nruns), color = sex), data = Cherry) + geom_boxplot() + facet_wrap( ~ year)
-
+SAT_2010 %>% 
+  pivot_longer(cols = read:write,
+               names_to = "test_type",
+               values_to = "score") %>% 
+  ggplot(aes(score, test_type)) +
+  geom_boxplot() +
+  coord_flip()
 ```
 
 
-```{r echo = FALSE}
-library(ggplot2)
-a <- SAT_2010[,c("state","salary","read")]
-b <- SAT_2010[,c("state","salary","math")]
-c <- SAT_2010[,c("state","salary","write")]
 
-names(a) <- names(b) <- names(c) <- c("state","salary","score")
-
-
-a$subject <- "read"
-b$subject <- "math"
-c$subject <- "write"
-
-
-dat <- data.frame(rbind(a,b,c))
-
-
-ggplot(aes(x = salary, y = score, col = subject), data = dat) + geom_point() + geom_smooth(se = FALSE)
-
-```
-
-```{r}
-library(Lahman)
-Teams %>% filter(teamID == "CHN") %>% count(HR >= 200)
-Teams %>% filter(teamID == "CHN" & HR >= 200) %>% summarise(median(W))
-
-ggplot(aes(x = yearID, y = HR), data = Teams) + geom_line() + facet_wrap( ~ lgID) + geom_smooth()
-
-```
- 

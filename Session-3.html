@@ -178,13 +178,13 @@ data &lt;- read_xlsx(file_path)</code></pre>
 <div id="section-checking-imported-data" class="section level3">
 <h3>Checking Imported Data:</h3>
 <p>After importing the data, it’s a good idea to examine it using
-functions like <code>head()</code>, <code>summary()</code>, or
+functions like <code>glimpse()</code>, <code>slice()</code>, or
 <code>str()</code>.</p>
 <pre><code># Display the first few rows
-head(data)
+slice(data, 1:5)
 
-# Get summary statistics
-summary(data)
+# Get summary of the variables
+glimpse(data)
 
 # Display the structure of the data
 str(data)</code></pre>
@@ -206,10 +206,8 @@ and <code>flights</code>.</p>
 <div id="section-joins" class="section level2">
 <h2>Joins</h2>
 <p>In the tidyverse, joining two datasets together is a way to combine
-data from different sources based on common variables. This is similar
-to joining tables in a relational database or using VLOOKUP in
-spreadsheet software. The dplyr package within the tidyverse provides
-functions to perform these joins.</p>
+data from different sources based on common variables. The dplyr package
+within the tidyverse provides functions to perform these joins.</p>
 <div id="section-inner-join" class="section level3">
 <h3>Inner Join</h3>
 <p>An inner join combines rows from two datasets where there’s a match
@@ -375,7 +373,8 @@ summary_right &lt;- nyc_dests_right %&gt;%
   summarize(num_airports = n())
 
 summary_full &lt;- nyc_dests_full %&gt;%
-  summarize(num_rows = n(), num_airports = sum(!is.na(name)))
+  summarize(num_rows = n(), 
+            num_airports = sum(!is.na(name)))
 
 # Display the summaries
 summary_inner</code></pre>
@@ -441,6 +440,90 @@ emp_df %&gt;%
 </div>
 </div>
 </div>
+<div id="section-pivots" class="section level2">
+<h2>Pivots</h2>
+<p>Data often comes in various formats, and its structure might not be
+ideal for the task at hand. Pivoting helps you reorganize your data to a
+format that makes it easier to analyze, visualize, or model. For
+example, you might need to pivot data to:</p>
+<ul>
+<li><p>Perform Aggregations: Pivoting can simplify data aggregation and
+summary calculations. You can consolidate multiple columns into one and
+apply functions like mean, sum, etc.</p></li>
+<li><p>Create Visualizations: Some visualizations require specific data
+structures. Pivoting can help organize data to generate meaningful
+visualizations like time series plots, heatmaps, or faceted
+graphs.</p></li>
+<li><p>Fit Models: Certain modeling techniques might require data in a
+specific shape. Pivoting can help transform data into a format suitable
+for predictive modeling or statistical analysis.</p></li>
+</ul>
+<div id="section-pivot-longer" class="section level3">
+<h3>Pivot Longer</h3>
+<p>The <code>pivot_longer()</code> function is used to convert data from
+a wide format (with multiple columns) into a long format (fewer
+columns). It’s particularly useful when you have variables spread across
+different columns and you want to stack them into a single column, often
+with corresponding values.</p>
+<pre><code>pivot_longer(data, cols, names_to, values_to)</code></pre>
+<ul>
+<li>data: The input data frame.</li>
+<li>cols: Columns to pivot into longer format.</li>
+<li>names_to: The name of the column that will store the column names
+from the original wide format.</li>
+<li>values_to: The name of the column that will store the values from
+the original wide format.</li>
+</ul>
+</div>
+<div id="section-pivot-wider" class="section level3">
+<h3>Pivot Wider</h3>
+<p>The <code>pivot_wider()</code> function is used to convert data from
+a long format to a wide format. It’s useful when you want to take
+distinct values from a column and spread them across new columns.</p>
+<pre><code>pivot_wider(data, names_from, values_from)</code></pre>
+<ul>
+<li>data: The input data frame.</li>
+<li>names_from: The column that contains the unique values to be
+transformed into column names in the wide format.</li>
+<li>values_from: The column that contains the values to be spread across
+the new wide-format columns.</li>
+</ul>
+<pre class="r"><code># Sample data
+data_wide &lt;- data.frame(
+  country = c(&quot;USA&quot;, &quot;Canada&quot;),
+  `2018` = c(250, 180),
+  `2019` = c(260, 190),
+  `2020` = c(270, 200)
+)
+
+# Using pivot_longer to reshape data
+data_wide %&gt;%
+  pivot_longer(cols = -country, names_to = &quot;year&quot;, values_to = &quot;value&quot;)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["value"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"USA","2":"X2018","3":"250"},{"1":"USA","2":"X2019","3":"260"},{"1":"USA","2":"X2020","3":"270"},{"1":"Canada","2":"X2018","3":"180"},{"1":"Canada","2":"X2019","3":"190"},{"1":"Canada","2":"X2020","3":"200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># Sample data
+data_long &lt;- data.frame(
+  country = c(&quot;USA&quot;, &quot;Canada&quot;),
+  year = rep(c(&quot;2018&quot;, &quot;2019&quot;, &quot;2020&quot;), each = 2),
+  value = c(250, 260, 270, 180, 190, 200)
+)
+# Using pivot_wider to reshape data
+data_long %&gt;%
+  pivot_wider(names_from = year, values_from = value)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["2018"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["2019"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["2020"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"USA","2":"250","3":"270","4":"190"},{"1":"Canada","2":"260","3":"180","4":"200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Since we are working with a lot of datasets from the Tidyverse these
+datasets are already in the tidy format and thus pivoting is not needed.
+But once you combine dataset together there can be options to summarise
+new variables and thus could lead to pivoting.</p>
+</div>
+</div>
 <div id="section-on-your-own..-1" class="section level2">
 <h2>On your own..</h2>
 <p>Answer the following questions either in the exercise below or in
@@ -456,6 +539,8 @@ airport?</li>
 from each airport?</li>
 <li>Which airlines operated the most flights from each airport in
 NYC?</li>
+<li>Create a dataset where each airline is a row and each column is a
+month (1-12) to see which is the busiest months for each airline.</li>
 </ol>
 <div class="tutorial-exercise" data-label="join_ex" data-completion="1"
 data-diagnostics="1" data-startover="1" data-lines="0">
